@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-2 md:px-6 py-10">
+  <div class="glass-panel p-6 md:p-8 space-y-6">
+    <div class="space-y-2">
+      <h1 class="text-3xl font-semibold text-ink">Редактировать проект</h1>
+      <p class="text-sm text-inkMuted">Обновите информацию о проекте</p>
+    </div>
+
+    {% if messages %}
+      <div class="space-y-2" style="display: none;">
+        {% for message in messages %}
+          <div data-django-message="{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if form.errors %}
+      <div class="glass-panel p-4 border border-danger/70 text-sm text-danger space-y-2">
+        <div class="font-semibold">Проверьте поля формы:</div>
+        <ul class="list-disc list-inside space-y-1">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li><span class="font-semibold">{{ field.label }}:</span> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+      
+      <div class="space-y-2">
+        <label for="{{ form.title.id_for_label }}" class="text-sm font-semibold text-ink">
+          {{ form.title.label }} *
+        </label>
+        {{ form.title }}
+        {% if form.title.help_text %}
+          <p class="text-xs text-inkMuted">{{ form.title.help_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="space-y-2">
+        <label for="{{ form.description.id_for_label }}" class="text-sm font-semibold text-ink">
+          {{ form.description.label }} *
+        </label>
+        {{ form.description }}
+        {% if form.description.help_text %}
+          <p class="text-xs text-inkMuted">{{ form.description.help_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="space-y-2">
+        <label for="{{ form.section.id_for_label }}" class="text-sm font-semibold text-ink">
+          {{ form.section.label }} *
+        </label>
+        {{ form.section }}
+        {% if form.section.help_text %}
+          <p class="text-xs text-inkMuted">{{ form.section.help_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-ink">
+          {{ form.tags.label }}
+        </label>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 rounded-btn bg-bgElevated border border-border">
+          {% for checkbox in form.tags %}
+            <div class="flex items-center gap-2">
+              {{ checkbox.tag }}
+              <label for="{{ checkbox.id_for_label }}" class="text-sm text-ink cursor-pointer">
+                {{ checkbox.choice_label }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+        {% if form.tags.help_text %}
+          <p class="text-xs text-inkMuted">{{ form.tags.help_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="space-y-2">
+        <label for="{{ form.image_file.id_for_label }}" class="text-sm font-semibold text-ink">
+          {{ form.image_file.label }}
+        </label>
+        {{ form.image_file }}
+        {% if form.image_file.help_text %}
+          <p class="text-xs text-inkMuted">{{ form.image_file.help_text }}</p>
+        {% endif %}
+        {% if project.image_file %}
+          <div class="mt-3">
+            <div class="text-sm font-semibold text-ink mb-2">Текущее изображение:</div>
+            <div class="project-image-square w-48 h-48">
+              <img src="{{ project.image_file.url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+            </div>
+            <p class="text-xs text-inkMuted mt-2">Загрузите новое изображение, чтобы заменить текущее</p>
+          </div>
+        {% elif project.image_url %}
+          <div class="mt-3">
+            <div class="text-sm font-semibold text-ink mb-2">Текущее изображение:</div>
+            <div class="project-image-square w-48 h-48">
+              <img src="{{ project.image_url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+            </div>
+            <p class="text-xs text-inkMuted mt-2">Загрузите новое изображение, чтобы заменить текущее</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="flex gap-3 pt-4">
+        <button type="submit" class="btn-primary px-6 py-3 font-semibold">
+          Сохранить изменения
+        </button>
+        <a href="{% url 'project_detail' project.pk %}" class="btn-outline px-6 py-3 font-semibold">
+          Отмена
+        </a>
+      </div>
+    </form>
+
+    <!-- Управление участниками (только для владельца) -->
+    {% if is_owner %}
+    <div class="border-t border-border pt-6 mt-6 space-y-4">
+      <h2 class="text-xl font-semibold text-ink">Управление участниками</h2>
+      
+      <!-- Форма приглашения участника -->
+      <div class="glass-panel p-4 border border-border">
+        <form method="post" class="space-y-3">
+          {% csrf_token %}
+          <input type="hidden" name="invite_participant" value="1">
+          <div class="flex gap-3">
+            <div class="flex-1">
+              {{ invite_form.username }}
+              {% if invite_form.username.errors %}
+                <div class="text-sm text-danger mt-1">{{ invite_form.username.errors }}</div>
+              {% endif %}
+            </div>
+            <button type="submit" class="btn-primary px-6 py-3 font-semibold whitespace-nowrap">
+              Пригласить
+            </button>
+          </div>
+          {% if invite_form.non_field_errors %}
+            <div class="text-sm text-danger">{{ invite_form.non_field_errors }}</div>
+          {% endif %}
+        </form>
+      </div>
+      
+      <!-- Список участников -->
+      <div class="space-y-3">
+        <h3 class="text-lg font-semibold text-ink">Текущие участники:</h3>
+        
+        <!-- Владелец проекта -->
+        <div class="flex items-center justify-between p-3 rounded-btn bg-bgElevated border border-border">
+          <div class="flex items-center gap-3">
+            <div class="author-avatar-small">
+              {% if project.owner.profile.avatar_file %}
+                <img src="{{ project.owner.profile.avatar_file.url }}" alt="{{ project.owner.username }}">
+              {% elif project.owner.profile.avatar_url %}
+                <img src="{{ project.owner.profile.avatar_url }}" alt="{{ project.owner.username }}">
+              {% else %}
+                <img src="{% static 'img/avatar-placeholder.png' %}" alt="{{ project.owner.username }}">
+              {% endif %}
+            </div>
+            <div>
+              <span class="text-ink font-semibold">
+                {{ project.owner.username }}
+              </span>
+              <div class="text-xs text-inkMuted">Владелец</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Участники -->
+        {% for participant in participants %}
+        <div class="flex items-center justify-between p-3 rounded-btn bg-bgElevated border border-border">
+          <div class="flex items-center gap-3">
+            <div class="author-avatar-small">
+              {% if participant.user.profile.avatar_file %}
+                <img src="{{ participant.user.profile.avatar_file.url }}" alt="{{ participant.user.username }}">
+              {% elif participant.user.profile.avatar_url %}
+                <img src="{{ participant.user.profile.avatar_url }}" alt="{{ participant.user.username }}">
+              {% else %}
+                <img src="{% static 'img/avatar-placeholder.png' %}" alt="{{ participant.user.username }}">
+              {% endif %}
+            </div>
+            <div>
+              <span class="text-ink font-semibold">
+                {{ participant.user.username }}
+              </span>
+              <div class="text-xs text-inkMuted">Присоединился {{ participant.joined_at|date:"d.m.Y" }}</div>
+            </div>
+          </div>
+          <a href="{% url 'remove_participant' project.pk participant.pk %}" 
+             class="text-danger hover:text-danger/70 text-sm font-semibold px-3 py-1 rounded-btn border border-danger/30 hover:bg-danger/10 transition-colors"
+             onclick="return confirm('Вы уверены, что хотите удалить этого участника из проекта?')">
+            Удалить
+          </a>
+        </div>
+        {% empty %}
+        <div class="text-center py-4 text-inkMuted">
+          Пока нет участников. Пригласите пользователей по их имени.
+        </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Отправленные приглашения -->
+      {% if sent_invitations %}
+      <div class="space-y-3 mt-6">
+        <h3 class="text-lg font-semibold text-ink">Отправленные приглашения:</h3>
+        {% for invitation in sent_invitations %}
+        <div class="flex items-center justify-between p-3 rounded-btn bg-bgElevated border border-border">
+          <div class="flex items-center gap-3">
+            <div class="author-avatar-small">
+              {% if invitation.invited_user.profile.avatar_file %}
+                <img src="{{ invitation.invited_user.profile.avatar_file.url }}" alt="{{ invitation.invited_user.username }}">
+              {% elif invitation.invited_user.profile.avatar_url %}
+                <img src="{{ invitation.invited_user.profile.avatar_url }}" alt="{{ invitation.invited_user.username }}">
+              {% else %}
+                <img src="{% static 'img/avatar-placeholder.png' %}" alt="{{ invitation.invited_user.username }}">
+              {% endif %}
+            </div>
+            <div>
+              <span class="text-ink font-semibold">
+                {{ invitation.invited_user.username }}
+              </span>
+              <div class="text-xs text-inkMuted">Приглашение отправлено {{ invitation.created_at|date:"d.m.Y H:i" }}</div>
+            </div>
+          </div>
+          <a href="{% url 'cancel_invitation' invitation.pk %}" 
+             class="text-danger hover:text-danger/70 text-sm font-semibold px-3 py-1 rounded-btn border border-danger/30 hover:bg-danger/10 transition-colors"
+             onclick="return confirm('Вы уверены, что хотите отменить приглашение для {{ invitation.invited_user.username }}?')">
+            Отменить
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

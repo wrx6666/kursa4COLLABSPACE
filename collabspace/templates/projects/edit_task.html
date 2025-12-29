@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-2 md:px-6 py-10">
+  <div class="glass-panel p-6 md:p-8">
+    <h1 class="text-3xl font-bold text-ink mb-6">Редактировать задачу</h1>
+    <p class="text-inkMuted mb-6">Проект: <span class="text-ink font-semibold">{{ project.title }}</span></p>
+    
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      <div>
+        <label for="{{ form.title.id_for_label }}" class="block text-sm font-semibold text-ink mb-2">
+          {{ form.title.label }}
+        </label>
+        {{ form.title }}
+        {% if form.title.errors %}
+          <div class="mt-1 text-sm text-danger">
+            {{ form.title.errors }}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div>
+        <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-ink mb-2">
+          {{ form.description.label }}
+        </label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <div class="mt-1 text-sm text-danger">
+            {{ form.description.errors }}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div>
+        <label for="{{ form.assignee.id_for_label }}" class="block text-sm font-semibold text-ink mb-2">
+          {{ form.assignee.label }}
+        </label>
+        {{ form.assignee }}
+        {% if form.assignee.errors %}
+          <div class="mt-1 text-sm text-danger">
+            {{ form.assignee.errors }}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div>
+        <label for="{{ form.status.id_for_label }}" class="block text-sm font-semibold text-ink mb-2">
+          {{ form.status.label }}
+        </label>
+        {{ form.status }}
+        {% if form.status.errors %}
+          <div class="mt-1 text-sm text-danger">
+            {{ form.status.errors }}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div>
+        <label for="{{ form.deadline.id_for_label }}" class="block text-sm font-semibold text-ink mb-2">
+          {{ form.deadline.label }} (не обязательно)
+        </label>
+        {{ form.deadline }}
+        {% if form.deadline.errors %}
+          <div class="mt-1 text-sm text-danger">
+            {{ form.deadline.errors }}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="flex items-center gap-4 pt-4">
+        <button type="submit" class="btn-primary px-6 py-3 font-semibold">
+          Сохранить изменения
+        </button>
+        <a href="{% url 'project_detail' project.pk %}" class="btn-outline px-6 py-3 font-semibold">
+          Отмена
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

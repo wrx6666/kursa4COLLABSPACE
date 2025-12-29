@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_head %}
+<style>
+  .hero-login-bg {
+    background-image: linear-gradient(180deg, rgba(11,13,19,0.6), rgba(11,13,19,0.9)), url("/static/img/register-hero.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 320px;
+    display: block;
+  }
+  
+</style>
+{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-2 md:px-6 py-10">
+  <div class="split-shell grid grid-cols-1 md:grid-cols-2">
+    <div class="split-left space-y-6">
+      <div class="space-y-2">
+        <h1 class="text-3xl font-semibold text-ink text-center md:text-left">Вход</h1>
+        <p class="text-sm text-inkMuted text-center md:text-left">Введите свои данные для входа в аккаунт</p>
+      </div>
+
+      {% if form.errors %}
+      <div class="glass-panel p-4 border border-danger/70 text-sm text-danger space-y-2">
+        <div class="font-semibold">Проверьте поля формы:</div>
+        <ul class="list-disc list-inside space-y-1">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li><span class="font-semibold">{{ field.label }}:</span> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-ink">Имя пользователя</label>
+          {{ form.username }}
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-ink">Пароль</label>
+          {{ form.password }}
+        </div>
+        <button type="submit" class="w-full py-3 rounded-btn btn-primary font-semibold">
+      Войти
+    </button>
+  </form>
+
+      <p class="text-sm text-inkMuted mt-2 text-center md:text-left">Нет аккаунта? <a class="font-semibold text-accent-blue" href="{% url 'signup' %}">Регистрация</a></p>
+    </div>
+
+    <div class="hidden md:block split-right register-hero hero-login-bg">
+      <div class="h-full flex items-end justify-end p-6 text-right text-inkMuted">
+        <div>
+          <p class="text-lg font-semibold text-ink">Добро пожаловать.</p>
+          <p>Продолжайте создавать и объединять людей.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

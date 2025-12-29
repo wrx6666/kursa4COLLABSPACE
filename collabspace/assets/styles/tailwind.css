@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #e8ecf5;
+  background: #0b0d13;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: #0b0d13;
+  color: #e8ecf5;
+}
+
+a {
+  color: inherit;
+}
+
+.glass-panel {
+  background: rgba(15, 17, 23, 0.9);
+  border: 1px solid #1c1f27;
+  border-radius: 14px;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary {
+  background: #ffffff;
+  color: #0b0d13;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.btn-dark {
+  background: #171a22;
+  color: #e8ecf5;
+  border: 1px solid #252a35;
+  border-radius: 10px;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #e8ecf5;
+  border: 1px solid #252a35;
+  border-radius: 10px;
+}
+
+.split-shell {
+  background: #0f1117;
+  border: 1px solid #1c1f27;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.split-left {
+  padding: 24px;
+}
+
+.split-right {
+  background: #0b0d13;
+  min-height: 100%;
+}
+
+.register-hero {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100%;
+}
+
+.split-right.placeholder {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #a5abb8;
+  background: linear-gradient(180deg, rgba(11,13,19,0.7) 0%, rgba(11,13,19,0.9) 100%);
+}
+
+input, select, textarea {
+  background: #0f1219;
+  border: 1px solid #1c2330;
+  color: #e8ecf5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6f7480;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #4da3ff;
+  box-shadow: 0 0 0 1px rgba(77,163,255,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* Стили для чекбоксов */
+input[type="checkbox"] {
+  width: auto;
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+  accent-color: #4da3ff;
+  background: #0f1219;
+  border: 1px solid #1c2330;
+  border-radius: 4px;
+}
+
+input[type="checkbox"]:checked {
+  background: #4da3ff;
+  border-color: #4da3ff;
+}
+
+input[type="checkbox"]:focus {
+  outline: 2px solid rgba(77,163,255,0.3);
+  outline-offset: 2px;
+}
+
+/* Стили для поля загрузки файла */
+input[type="file"] {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(77,163,255,0.2);
+  color: #4da3ff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: rgba(77,163,255,0.3);
+}
+
+input[type="file"]:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+input[type="file"]:focus::file-selector-button {
+  outline: 2px solid rgba(77,163,255,0.3);
+  outline-offset: 2px;
+}
+
+/* Стили для квадратных изображений проектов */
+.project-image-square {
+  width: 280px;
+  height: 280px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #1c1f27;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .project-image-square {
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 1;
+    height: auto;
+  }
+}
+
+/* Стили для кнопки "Добавить в предпочтения" */
+.btn-favorite {
+  transition: all 0.2s ease;
+}
+
+.btn-favorite:hover svg {
+  color: #4da3ff;
+}
+
+.btn-favorite:hover {
+  border-color: #4da3ff;
+}
+
+/* Стили для аватарок авторов на странице проекта */
+.author-avatar-small {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  border-radius: 50% !important;
+  border: 2px solid #1c1f27;
+  overflow: hidden !important;
+  background: #11131c;
+  flex-shrink: 0;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.author-avatar-small img {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  object-fit: cover !important;
+  object-position: center;
+  display: block !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Стили для всплывающих уведомлений */
+.notification-toast {
+  min-width: 300px;
+  max-width: 500px;
+  word-wrap: break-word;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.notification-toast.fade-out {
+  animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* Стили для выпадающего меню пользователя */
+#user-menu-dropdown {
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#user-menu-dropdown.hidden {
+  display: none !important;
+}
+
+/* Золотая обводка для автора проекта */
+.owner-avatar-gold {
+  border: 3px solid #fbbf24 !important;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5) !important;
+}
+

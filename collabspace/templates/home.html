@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main_class %}w-full max-w-[95%] mx-auto px-4 md:px-8 py-6{% endblock %}
+
+{% block content %}
+<div class="w-full space-y-8">
+  
+  <!-- TOP-15 секция -->
+  {% if top_projects %}
+    <div class="space-y-4">
+      <div class="glass-panel p-4 rounded-btn">
+        <h2 class="text-lg font-semibold text-ink text-center">
+          ТОП-15 по количеству оценок и комментариев за сутки
+        </h2>
+      </div>
+      
+      <!-- Горизонтальный скроллируемый список -->
+      <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide justify-center" style="scrollbar-width: none; -ms-overflow-style: none;">
+        {% for project in top_projects %}
+          <div class="flex-shrink-0 flex flex-col items-center gap-2" style="min-width: 100px;">
+            <!-- Круглая иконка проекта с красной обводкой -->
+            <a href="{% url 'project_detail' project.pk %}" class="w-20 h-20 rounded-full border-2 border-danger overflow-hidden bg-bgElevated flex-shrink-0">
+              {% if project.image_file %}
+                <img src="{{ project.image_file.url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+              {% elif project.image_url %}
+                <img src="{{ project.image_url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center bg-bgElevated">
+                  <span class="text-inkMuted text-xs">Нет</span>
+                </div>
+              {% endif %}
+            </a>
+            <!-- Название проекта -->
+            <span class="text-sm text-ink text-center line-clamp-2 max-w-[100px]">{{ project.title|truncatewords:3 }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  
+  <!-- Новые проекты -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-semibold text-ink">Новые проекты</h2>
+    </div>
+    
+    <!-- Сетка карточек -->
+    {% if new_projects %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for project in new_projects %}
+          <a href="{% url 'project_detail' project.pk %}" class="liquid-glass-card p-4 rounded-btn block">
+            <!-- Изображение проекта -->
+            {% if project.image_file %}
+              <div class="w-full h-48 rounded-btn overflow-hidden mb-3 bg-bgElevated">
+                <img src="{{ project.image_file.url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+              </div>
+            {% elif project.image_url %}
+              <div class="w-full h-48 rounded-btn overflow-hidden mb-3 bg-bgElevated">
+                <img src="{{ project.image_url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+              </div>
+            {% else %}
+              <div class="w-full h-48 rounded-btn bg-bgElevated border border-border mb-3 flex items-center justify-center">
+                <span class="text-inkMuted text-sm">Нет изображения</span>
+              </div>
+            {% endif %}
+            
+            <!-- Название проекта -->
+            <h3 class="text-lg font-semibold text-ink mb-2 line-clamp-2">{{ project.title }}</h3>
+            
+            <!-- Описание -->
+            <p class="text-sm text-inkMuted line-clamp-2 mb-3">{{ project.description|truncatewords:15 }}</p>
+            
+            <!-- Теги -->
+            {% if project.get_tags_display_list %}
+              <div class="flex flex-wrap gap-2 mb-3">
+                {% for tag in project.get_tags_display_list|slice:":3" %}
+                  <span class="px-2 py-1 rounded-btn bg-bgElevated border border-border text-xs text-inkMuted">
+                    {{ tag }}
+                  </span>
+                {% endfor %}
+                {% if project.get_tags_display_list|length > 3 %}
+                  <span class="px-2 py-1 rounded-btn bg-bgElevated border border-border text-xs text-inkMuted">
+                    +{{ project.get_tags_display_list|length|add:"-3" }}
+                  </span>
+                {% endif %}
+              </div>
+            {% endif %}
+            
+            <!-- Раздел и автор -->
+            <div class="flex items-center justify-between text-xs text-inkMuted">
+              <span>{{ project.get_section_display }}</span>
+              <span>{{ project.owner.username }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="glass-panel p-10 text-center">
+        <p class="text-inkMuted text-lg">Пока нет новых проектов.</p>
+      </div>
+    {% endif %}
+  </div>
+  
+  <!-- Новые авторы -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-semibold text-ink">Новые авторы</h2>
+    </div>
+    
+    <!-- Сетка карточек -->
+    {% if new_author_projects %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for project in new_author_projects %}
+          <a href="{% url 'project_detail' project.pk %}" class="liquid-glass-card p-4 rounded-btn block">
+            <!-- Изображение проекта -->
+            {% if project.image_file %}
+              <div class="w-full h-48 rounded-btn overflow-hidden mb-3 bg-bgElevated">
+                <img src="{{ project.image_file.url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+              </div>
+            {% elif project.image_url %}
+              <div class="w-full h-48 rounded-btn overflow-hidden mb-3 bg-bgElevated">
+                <img src="{{ project.image_url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+              </div>
+            {% else %}
+              <div class="w-full h-48 rounded-btn bg-bgElevated border border-border mb-3 flex items-center justify-center">
+                <span class="text-inkMuted text-sm">Нет изображения</span>
+              </div>
+            {% endif %}
+            
+            <!-- Название проекта -->
+            <h3 class="text-lg font-semibold text-ink mb-2 line-clamp-2">{{ project.title }}</h3>
+            
+            <!-- Описание -->
+            <p class="text-sm text-inkMuted line-clamp-2 mb-3">{{ project.description|truncatewords:15 }}</p>
+            
+            <!-- Теги -->
+            {% if project.get_tags_display_list %}
+              <div class="flex flex-wrap gap-2 mb-3">
+                {% for tag in project.get_tags_display_list|slice:":3" %}
+                  <span class="px-2 py-1 rounded-btn bg-bgElevated border border-border text-xs text-inkMuted">
+                    {{ tag }}
+                  </span>
+                {% endfor %}
+                {% if project.get_tags_display_list|length > 3 %}
+                  <span class="px-2 py-1 rounded-btn bg-bgElevated border border-border text-xs text-inkMuted">
+                    +{{ project.get_tags_display_list|length|add:"-3" }}
+                  </span>
+                {% endif %}
+              </div>
+            {% endif %}
+            
+            <!-- Раздел и автор -->
+            <div class="flex items-center justify-between text-xs text-inkMuted">
+              <span>{{ project.get_section_display }}</span>
+              <span>{{ project.owner.username }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="glass-panel p-10 text-center">
+        <p class="text-inkMuted text-lg">Пока нет проектов от новых авторов.</p>
+      </div>
+    {% endif %}
+  </div>
+  
+  <!-- Результаты поиска (если есть фильтры) -->
+  {% if request.GET.search or request.GET.tags or request.GET.section %}
+    <div class="space-y-4 pt-6 border-t border-border">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-ink">
+          Результаты поиска: {{ projects|length }}
+        </h2>
+      </div>
+      
+      {% if projects %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {% for project in projects %}
+            <a href="{% url 'project_detail' project.pk %}" class="glass-panel p-4 border border-border hover:border-accent-blue transition-colors block">
+              <!-- Изображение проекта -->
+              {% if project.image_file %}
+                <div class="w-full h-48 rounded-btn overflow-hidden mb-3 bg-bgElevated">
+                  <img src="{{ project.image_file.url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+                </div>
+              {% elif project.image_url %}
+                <div class="w-full h-48 rounded-btn overflow-hidden mb-3 bg-bgElevated">
+                  <img src="{{ project.image_url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+                </div>
+              {% else %}
+                <div class="w-full h-48 rounded-btn bg-bgElevated border border-border mb-3 flex items-center justify-center">
+                  <span class="text-inkMuted text-sm">Нет изображения</span>
+                </div>
+              {% endif %}
+              
+              <!-- Название проекта -->
+              <h3 class="text-lg font-semibold text-ink mb-2 line-clamp-2">{{ project.title }}</h3>
+              
+              <!-- Описание -->
+              <p class="text-sm text-inkMuted line-clamp-2 mb-3">{{ project.description|truncatewords:15 }}</p>
+              
+              <!-- Теги -->
+              {% if project.get_tags_display_list %}
+                <div class="flex flex-wrap gap-2 mb-3">
+                  {% for tag in project.get_tags_display_list|slice:":3" %}
+                    <span class="px-2 py-1 rounded-btn bg-bgElevated border border-border text-xs text-inkMuted">
+                      {{ tag }}
+                    </span>
+                  {% endfor %}
+                  {% if project.get_tags_display_list|length > 3 %}
+                    <span class="px-2 py-1 rounded-btn bg-bgElevated border border-border text-xs text-inkMuted">
+                      +{{ project.get_tags_display_list|length|add:"-3" }}
+                    </span>
+                  {% endif %}
+                </div>
+              {% endif %}
+              
+              <!-- Раздел и автор -->
+              <div class="flex items-center justify-between text-xs text-inkMuted">
+                <span>{{ project.get_section_display }}</span>
+                <span>{{ project.owner.username }}</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="glass-panel p-10 text-center">
+          <p class="text-inkMuted text-lg">Проекты не найдены. Попробуйте изменить параметры поиска.</p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+  
+</div>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+{% endblock %}

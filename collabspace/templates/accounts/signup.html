@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_head %}
+<style>
+  .hero-signup-bg {
+    background-image: linear-gradient(180deg, rgba(11,13,19,0.6), rgba(11,13,19,0.9)), url("/static/img/register-hero.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 320px;
+    display: block;
+  }
+  
+</style>
+{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-2 md:px-6 py-10">
+  <div class="split-shell grid grid-cols-1 md:grid-cols-2">
+    <div class="split-left space-y-6">
+      <h1 class="text-3xl font-semibold text-ink text-center md:text-left">Создать аккаунт</h1>
+
+      <div class="flex gap-2 text-sm font-semibold" id="role-toggle">
+        <button type="button" data-role="user" class="role-btn flex-1 btn-dark py-2">Я пользователь</button>
+        <button type="button" data-role="author" class="role-btn flex-1 btn-outline py-2">Я автор</button>
+      </div>
+
+      {% if form.errors %}
+      <div class="glass-panel p-4 border border-danger/70 text-sm text-danger space-y-2">
+        <div class="font-semibold">Проверьте поля формы:</div>
+        <ul class="list-disc list-inside space-y-1">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li><span class="font-semibold">{{ field.label }}:</span> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <!-- Скрытое поле для роли (рендерится из формы Django) -->
+        {{ form.role }}
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-ink">Имя пользователя (ник) *</label>
+          {{ form.username }}
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-ink">Email *</label>
+          {{ form.email }}
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-ink">Пароль *</label>
+          {{ form.password1 }}
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-ink">Подтверждение пароля *</label>
+          {{ form.password2 }}
+        </div>
+
+        <div class="space-y-2" id="project-link-field" style="display: none;">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-semibold text-ink">Ссылки на проекты *</label>
+            <button type="button" id="add-link-btn" class="text-accent-blue hover:text-accent-link text-sm font-semibold flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Добавить ссылку
+            </button>
+          </div>
+          <div id="project-links-container" class="space-y-2">
+            <div class="project-link-item flex gap-2">
+              <input 
+                type="url" 
+                name="project_link_0" 
+                class="project-link-input w-full rounded-btn bg-bgElevated border border-border px-3 py-3 text-ink placeholder-inkMuted" 
+                placeholder="https://example.com/projects"
+              >
+              <button type="button" class="remove-link-btn text-inkMuted hover:text-danger px-2" style="display: none;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <p class="text-xs text-inkMuted">Можно добавить до 3 ссылок на ваши проекты</p>
+          <input type="hidden" name="project_links_json" id="project_links_json" value="[]">
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-btn btn-primary font-semibold">
+          Создать аккаунт
+        </button>
+      </form>
+
+      <p class="text-sm text-inkMuted text-center md:text-left">Уже есть аккаунт? <a class="font-semibold text-accent-blue" href="{% url 'login' %}">Войти</a></p>
+    </div>
+
+    <div class="hidden md:block split-right register-hero hero-signup-bg">
+      <div class="h-full flex items-end justify-end p-6 text-right text-inkMuted">
+        <div>
+          <p class="text-lg font-semibold text-ink">Сообщество предназначено для создания, организации и совместного ведения творческих проектов. </p>
+          <p>Создаем ценности и объединяем людей с 2025 года.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const roleButtons = document.querySelectorAll('.role-btn');
+  const roleInput = document.getElementById('id_role');
+  const projectLinkField = document.getElementById('project-link-field');
+  const projectLinksContainer = document.getElementById('project-links-container');
+  const addLinkBtn = document.getElementById('add-link-btn');
+  const projectLinksJsonInput = document.getElementById('project_links_json');
+  
+  let linkCount = 1;
+  const maxLinks = 3;
+  
+  function updateProjectLinksJson() {
+    const inputs = projectLinksContainer.querySelectorAll('.project-link-input');
+    const links = Array.from(inputs).map(input => input.value.trim()).filter(link => link);
+    projectLinksJsonInput.value = JSON.stringify(links);
+  }
+  
+  function updateAddButton() {
+    const currentLinks = projectLinksContainer.querySelectorAll('.project-link-item').length;
+    if (currentLinks >= maxLinks) {
+      addLinkBtn.style.display = 'none';
+    } else {
+      addLinkBtn.style.display = 'flex';
+    }
+  }
+  
+  function addLinkField() {
+    if (projectLinksContainer.querySelectorAll('.project-link-item').length >= maxLinks) {
+      return;
+    }
+    
+    const item = document.createElement('div');
+    item.className = 'project-link-item flex gap-2';
+    item.innerHTML = `
+      <input 
+        type="url" 
+        name="project_link_${linkCount}" 
+        class="project-link-input w-full rounded-btn bg-bgElevated border border-border px-3 py-3 text-ink placeholder-inkMuted" 
+        placeholder="https://example.com/projects"
+      >
+      <button type="button" class="remove-link-btn text-inkMuted hover:text-danger px-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    `;
+    
+    projectLinksContainer.appendChild(item);
+    linkCount++;
+    
+    // Обработчик удаления
+    item.querySelector('.remove-link-btn').addEventListener('click', function() {
+      item.remove();
+      updateProjectLinksJson();
+      updateAddButton();
+      // Показываем кнопку удаления для первого поля, если осталось больше одного
+      updateRemoveButtons();
+    });
+    
+    // Обработчик изменения значения
+    item.querySelector('.project-link-input').addEventListener('input', updateProjectLinksJson);
+    
+    updateAddButton();
+    updateRemoveButtons();
+  }
+  
+  function updateRemoveButtons() {
+    const items = projectLinksContainer.querySelectorAll('.project-link-item');
+    items.forEach((item, index) => {
+      const removeBtn = item.querySelector('.remove-link-btn');
+      if (items.length > 1) {
+        removeBtn.style.display = 'block';
+      } else {
+        removeBtn.style.display = 'none';
+      }
+    });
+  }
+  
+  // Инициализация обработчиков для существующих полей
+  projectLinksContainer.querySelectorAll('.project-link-input').forEach(input => {
+    input.addEventListener('input', updateProjectLinksJson);
+  });
+  
+  updateRemoveButtons();
+  
+  addLinkBtn.addEventListener('click', addLinkField);
+  
+  roleButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const role = this.getAttribute('data-role');
+      roleInput.value = role;
+      
+      // Обновляем стили кнопок
+      roleButtons.forEach(b => {
+        if (b === this) {
+          b.classList.remove('btn-outline');
+          b.classList.add('btn-dark');
+        } else {
+          b.classList.remove('btn-dark');
+          b.classList.add('btn-outline');
+        }
+      });
+      
+      // Показываем/скрываем поле для ссылки на проекты
+      if (role === 'author') {
+        projectLinkField.style.display = 'block';
+        updateProjectLinksJson();
+      } else {
+        projectLinkField.style.display = 'none';
+      }
+    });
+  });
+  
+  // Обновляем JSON при отправке формы
+  document.querySelector('form').addEventListener('submit', function(e) {
+    updateProjectLinksJson();
+  });
+  
+});
+</script>
+{% endblock %}
+

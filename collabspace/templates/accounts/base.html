@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>CollabSpace</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}?v=4">
+</head>
+<body class="min-h-screen text-ink bg-bg">
+  <header class="bg-white/90 backdrop-blur border-b border-border sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-6 py-3 flex items-center gap-6">
+      <div class="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-accent-indigo to-accent-coral">
+        CollabSpace
+      </div>
+      <nav class="flex gap-4 text-sm font-medium text-ink/70">
+        <a href="/" class="hover:text-ink">Главная</a>
+        <a href="#" class="hover:text-ink">Проекты</a>
+        <a href="#" class="hover:text-ink">Задачи</a>
+        <a href="#" class="hover:text-ink">Лента</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-3">
+        <a href="{% url 'profile' %}" class="text-sm text-ink/80 hover:text-ink">Профиль</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-10">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

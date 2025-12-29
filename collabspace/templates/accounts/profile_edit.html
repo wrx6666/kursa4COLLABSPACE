@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-2 md:px-6 py-6 space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-ink">Настройки профиля</h1>
+    <a href="{% url 'profile' %}" class="text-sm text-inkMuted hover:text-ink">← Назад к профилю</a>
+  </div>
+
+  {% if messages %}
+    <div class="space-y-2" style="display: none;">
+      {% for message in messages %}
+        <div data-django-message="{{ message.tags|default:'info' }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="glass-panel p-6 space-y-6">
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+      <div class="p-4 rounded-btn bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="space-y-2">
+      <label for="{{ form.bio.id_for_label }}" class="block text-sm font-semibold text-ink">
+        {{ form.bio.label }}
+      </label>
+      {{ form.bio }}
+      {% if form.bio.errors %}
+        <div class="text-sm text-red-400">{{ form.bio.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="space-y-2">
+      <label for="{{ form.avatar_file.id_for_label }}" class="block text-sm font-semibold text-ink">
+        {{ form.avatar_file.label }}
+      </label>
+      {{ form.avatar_file }}
+      {% if form.avatar_file.errors %}
+        <div class="text-sm text-red-400">{{ form.avatar_file.errors }}</div>
+      {% endif %}
+      {% if form.avatar_file.help_text %}
+        <p class="text-xs text-inkMuted">{{ form.avatar_file.help_text }}</p>
+      {% endif %}
+    </div>
+
+    {% if profile.avatar_file %}
+      <div class="space-y-2">
+        <div class="text-sm font-semibold text-ink">Текущий аватар:</div>
+        <div class="w-24 h-24 rounded-full border-2 border-border overflow-hidden bg-bgElevated">
+          <img src="{{ profile.avatar_file.url }}" alt="avatar" class="w-full h-full object-cover">
+        </div>
+      </div>
+    {% elif profile.avatar_url %}
+      <div class="space-y-2">
+        <div class="text-sm font-semibold text-ink">Текущий аватар:</div>
+        <div class="w-24 h-24 rounded-full border-2 border-border overflow-hidden bg-bgElevated">
+          <img src="{{ profile.avatar_url }}" alt="avatar" class="w-full h-full object-cover">
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="flex gap-3">
+      <button type="submit" class="btn-primary px-6 py-2 font-semibold">Сохранить</button>
+      <a href="{% url 'profile' %}" class="btn-outline px-6 py-2 font-semibold">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

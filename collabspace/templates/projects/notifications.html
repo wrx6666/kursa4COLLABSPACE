@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-2 md:px-6 py-10 space-y-6">
+  
+  <div class="liquid-glass-panel p-6 md:p-8 rounded-btn">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-semibold text-ink">Уведомления</h1>
+      {% if unread_count > 0 %}
+        <form method="post" action="{% url 'mark_all_notifications_read' %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="btn-outline px-4 py-2 text-sm font-semibold">
+            Отметить все как прочитанные
+          </button>
+        </form>
+      {% endif %}
+    </div>
+    
+    {% if notifications %}
+      <div class="space-y-3">
+        {% for notification in notifications %}
+          <div class="liquid-glass-panel p-4 rounded-btn border border-border {% if not notification.is_read %}bg-accent-blue/5 border-accent-blue/30{% endif %}">
+            <div class="flex items-start gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  {% if not notification.is_read %}
+                    <span class="w-2 h-2 bg-accent-blue rounded-full"></span>
+                  {% endif %}
+                  <span class="text-xs text-inkMuted">{{ notification.created_at|date:"d.m.Y H:i" }}</span>
+                  <span class="px-2 py-0.5 rounded-btn text-xs font-medium bg-bgElevated border border-border text-inkMuted">
+                    {{ notification.get_notification_type_display }}
+                  </span>
+                </div>
+                <p class="text-ink mb-3">{{ notification.message }}</p>
+                
+                <!-- Ссылки на связанные объекты -->
+                <div class="flex items-center gap-2 flex-wrap">
+                  {% if notification.project %}
+                    <a href="{% url 'project_detail' notification.project.pk %}" class="btn-outline px-3 py-1.5 text-xs font-semibold">
+                      Открыть проект
+                    </a>
+                  {% endif %}
+                  {% if notification.task %}
+                    <a href="{% url 'project_detail' notification.project.pk %}#task-{{ notification.task.pk }}" class="btn-outline px-3 py-1.5 text-xs font-semibold">
+                      Открыть задачу
+                    </a>
+                  {% endif %}
+                  {% if notification.invitation %}
+                    <a href="{% url 'profile' %}?tab=invitations" class="btn-outline px-3 py-1.5 text-xs font-semibold">
+                      Открыть приглашения
+                    </a>
+                  {% endif %}
+                  {% if not notification.is_read %}
+                    <form method="post" action="{% url 'mark_notification_read' notification.pk %}" class="inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-outline px-3 py-1.5 text-xs font-semibold">
+                        Отметить как прочитанное
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-12 text-inkMuted">
+        <svg class="w-16 h-16 mx-auto mb-4 text-inkMuted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+        </svg>
+        <p class="text-lg">У вас пока нет уведомлений</p>
+      </div>
+    {% endif %}
+  </div>
+  
+</div>
+{% endblock %}
+
